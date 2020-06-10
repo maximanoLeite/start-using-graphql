@@ -1,21 +1,29 @@
-const users = [
-  { id: 1, name: 'Joana de Melo Arruda', email: 'josya159@yahoo.com'},
-  { id: 2, name: 'Carolina Silva', email: 'carols3@gmail.com'}
-];
+const db = require('./database/config');
+
+
 module.exports = {
   Query: {
-    users: () => {
-      return users;
+    async users () {
+      return await db('users').select('*');
     },
     
-    user: () => {
-      return users[0]; 
+    async user (_, { id }) {
+      return await db('users').where({ id });
     }
   },
   
   Mutation: {
-    createUser: () => {
-      return users[0];
+    async createUser (_, {name, email}) {
+      const result = await db('users').insert({
+        name,
+        email
+      });
+      
+      const id = result[0];
+
+      return await db('users')
+        .where({ id })
+        .first();
     }
   }
 }
